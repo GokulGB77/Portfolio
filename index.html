@@ -95,7 +95,7 @@
             <div class="col-lg-6">
               <ul>
                 <li><i class="bi bi-chevron-right"></i> <strong>Birthday:</strong> <span>04 February 2000</span></li>
-                <li><i class="bi bi-chevron-right"></i> <strong>Website:</strong> <span>www.gokulgbhattathiri.com</span></li>
+                <li><i class="bi bi-chevron-right"></i> <strong>Website:</strong> <span>www.example.com</span></li>
                 <li><i class="bi bi-chevron-right"></i> <strong>Phone:</strong> <span>+91 8606446095</span></li>
                 <li><i class="bi bi-chevron-right"></i> <strong>City:</strong> <span>Alappey, Kerala</span></li>
               </ul>
@@ -198,7 +198,7 @@
         </div>
         <div class="col-lg-3 col-md-4 mt-4 mt-md-0">
           <div class="icon-box">
-            <img class="me-3 "  src="assets/icons/movies.svg"  style="color: #5578ff; width: 32px;" alt="">
+            <img class="me-3 "  src="assets/icons/play-button-red-icon.svg"  style="color: #5578ff; width: 32px;" alt="">
             <h3>Sci-Fi Movies</h3>
           </div>
         </div>
@@ -496,12 +496,14 @@
           <div>
             <div class="row">
               <div class="col-md-6 form-group">
-                <input type="name" class="form-control" name="Name" id="name" aria-describedby="name" placeholder="Your Name" required>
+                <input type="text" class="form-control" name="Name" id="name" aria-describedby="name" placeholder="Your Name" oninput="validateName(this)" required>
+                <span id="name-error-msg" class="text-danger"></span>
               </div>
               <div class="col-md-6 form-group mt-3 mt-md-0">
                 <input type="email" class="form-control" name="Email" id="email" aria-describedby="emailHelp"
-                  placeholder="Your Email" required>
-              </div>
+                    placeholder="Your Email" oninput="validateEmail(this)" required>
+                <span id="email-error-msg" class="text-danger"></span> <!-- Error message for email -->
+            </div>
             </div>
             <div class="form-group mt-3">
               <input type="text" class="form-control" name="Subject" id="subject" placeholder="Subject" required>
@@ -540,23 +542,60 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script>
+    const nameErrorMsg = document.getElementById('name-error-msg'); // Define the error message element for name
+    const emailErrorMsg = document.getElementById('email-error-msg'); // Define the error message element for email
+    const sendButton = document.querySelector('button[type="submit"]'); // Select the submit button
+
+    function validateName(input) {
+        const regex = /\d/;
+        if (regex.test(input.value)) {
+            nameErrorMsg.innerHTML = 'Name should only contain letters and spaces.';
+            sendButton.disabled = true; // Disable the submit button
+        } else {
+            nameErrorMsg.innerHTML = '';
+            validateSubmitButton(); // Check if the submit button can be enabled
+        }
+    }
+
+    function validateEmail(input) {
+        const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+        const isValidEmail = emailRegex.test(input.value);
+
+        // Display error message if email format is invalid
+        if (!isValidEmail) {
+            emailErrorMsg.innerHTML = 'Invalid email format. Please enter a valid email address.';
+            sendButton.disabled = true; // Disable the submit button
+        } else {
+            emailErrorMsg.innerHTML = '';
+            validateSubmitButton(); // Check if the submit button can be enabled
+        }
+    }
+
+    function validateSubmitButton() {
+        // Enable the submit button only if there are no error messages
+        if (nameErrorMsg.innerHTML === '' && emailErrorMsg.innerHTML === '') {
+            sendButton.disabled = false; // Enable the submit button
+        }
+    }
+
     const scriptURL =
-      "https://script.google.com/macros/s/AKfycbyq2HB9p8kZoxMucRSX2AJ-yjZQXinWmSHUW3PsmmPwweyStpA-zF04uA-hbZ8k-KREkA/exec";
+        "https://script.google.com/macros/s/AKfycbyq2HB9p8kZoxMucRSX2AJ-yjZQXinWmSHUW3PsmmPwweyStpA-zF04uA-hbZ8k-KREkA/exec";
     const form = document.forms["email-form"];
 
     form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      fetch(scriptURL, { method: "POST", body: new FormData(form) })
-        .then((response) => {
-          msg.innerHTML = "Message Succesfullly Sent!!";
-          setTimeout(function () {
-            msg.innerHTML = "";
-          }, 1000);
-          form.reset();
-        })
-        .catch((error) => console.error("Error!", error.message));
+        e.preventDefault();
+        fetch(scriptURL, { method: "POST", body: new FormData(form) })
+            .then((response) => {
+                msg.innerHTML = "Message Successfully Sent!!";
+                setTimeout(function () {
+                    msg.innerHTML = "";
+                }, 3000);
+                form.reset();
+                sendButton.disabled = true; // Disable the submit button after successful submission
+            })
+            .catch((error) => console.error("Error!", error.message));
     });
-  </script>
+</script>
  
 </body>
 
